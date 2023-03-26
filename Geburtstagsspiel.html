@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unendlich viele Geburtstagsballons für die beste Mama der Welt :*</title>
+  <style>
+    body {
+      background-color: #87ceeb;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    canvas {
+      background-color: #ffffff;
+      display: block;
+      margin: 20px auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Unendlich viele Geburtstagsballons für die beste Mama der Welt :*</h1>
+  <p>Pro getroffenem Ballon wird sich Dir ein Wunsch erfüllen! Du hast 15 Sekunden.</p>
+  <canvas id="gameCanvas" width="320" height="480"></canvas>
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const balloons = [];
+    const colors = ['#FF0000', '#FFA500', '#FFFF00', '#008000', '#0000FF', '#800080'];
+    let gameTime;
+    let score = 0;
+    let gameInterval;
+    
+    function createBalloon() {
+      const x = Math.random() * (canvas.width - 20);
+      const y = canvas.height;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      balloons.push({ x, y, color });
+    }
+    
+    function update() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      balloons.forEach((balloon, index) => {
+        balloon.y -= 2;
+        ctx.beginPath();
+        ctx.arc(balloon.x, balloon.y, 20, 0, 2 * Math.PI);
+        ctx.fillStyle = balloon.color;
+        ctx.fill();
+        ctx.closePath();
+        if (balloon.y < -20) {
+          balloons.splice(index, 1);
+        }
+      });
+      ctx.font = '24px Arial';
+      ctx.fillStyle = 'black';
+      ctx.fillText('Score: ' + score, 10, 30);
+    }
+    
+    function startGame() {
+      gameTime = 15;
+      gameInterval = setInterval(() => {
+        createBalloon();
+        update();
+        gameTime -= 0.1;
+        if (gameTime <= 0) {
+          clearInterval(gameInterval);
+          alert('Zeit um! Deine Punktzahl: ' + score);
+        }
+      }, 100);
+    }
+    
+    canvas.addEventListener('click', (event) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      balloons.forEach((balloon, index) => {
+        const distance = Math.hypot(balloon.x - x, balloon.y - y);
+        if (distance <= 20) {
+          balloons.splice(index, 1);
+          score += 1;
+        }
+      });
+    });
+    
+    startGame();
+  </script>
+</body>
+</html>
